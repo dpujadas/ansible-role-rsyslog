@@ -1,0 +1,73 @@
+---
+# tasks file for rsyslog
+
+- name: Install adiscon repo
+  apt_repository:
+    repo: 'ppa:adiscon/v8-stable'
+    state: 'present'
+    update_cache: 'yes'
+  tags:
+    - rsyslog
+
+- name: Prevent rsyslog to start on install
+  copy:
+    content: |-
+      #!/bin/sh
+      exit 101
+    dest: '/usr/sbin/policy-rc.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  changed_when: False
+  tags:
+    - rsyslog
+
+- name: Install the rsyslog package
+  apt:
+    name: 'rsyslog'
+    state: 'present'
+  tags:
+    - rsyslog
+
+- name: Remove policy-rc.d
+  file:
+    name: '/usr/sbin/policy-rc.d'
+    state: 'absent'
+  changed_when: False
+  tags:
+    - rsyslog
+
+- name: Configure rsyslog
+  template:
+    src: 'rsyslog.conf.j2'
+    dest: '/etc/rsyslog.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: restart rsyslog
+  tags:
+    - rsyslog
+
+- name: Enable custom configs
+  template:
+    src: '{{ item.template }}'
+    dest: '/etc/rsyslog.d/{{ item.order }}-{{ item.name }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ rsyslog_confs }}'
+  notify: restart rsyslog
+  tags:
+    - rsyslog
+
+- name: Ensure /var/log has right perms
+  file:
+    path: '/var/log'
+    owner: 'syslog'
+    mode: 'g+w'
+  tags:
+    - rsyslog
+
+- include: '{{ rsyslog_init_system }}.yml'
+  tags:
+    - rsyslog

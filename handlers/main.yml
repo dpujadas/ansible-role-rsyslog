@@ -1,0 +1,30 @@
+---
+# handlers file for rsyslog
+
+- name: restart rsyslog
+  shell: >
+    /bin/true
+  notify: 'restart rsyslog {{ rsyslog_init_system }}'
+
+- name: restart rsyslog upstart
+  service:
+    name: 'rsyslog'
+    state: 'restarted'
+
+- name: restart rsyslog runit
+  shell: >
+    sleep 5 && sv restart rsyslog
+
+- name: reload rsyslog
+  shell: >
+    /bin/true
+  notify: 'reload rsyslog {{ rsyslog_init_system }}'
+
+- name: reload rsyslog upstart
+  service:
+    name: 'rsyslog'
+    state: 'reloaded'
+
+- name: reload rsyslog runit
+  shell: >
+    sleep 5 && sv reload rsyslog
