@@ -3,3 +3,7 @@
 
 rsyslog_confs: []
 rsyslog_init_system: 'upstart'
+rsyslog_allow_udp: False
+rsyslog_udp_port: '514'
+rsyslog_allow_tcp: False
+rsyslog_tcp_port: '514'

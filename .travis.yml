@@ -24,4 +24,4 @@ script:
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
   # Check rsyslog is up and running
-  # TODO
+  - (echo > /dev/tcp/$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' travis)/514) >/dev/null 2>&1
