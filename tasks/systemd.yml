@@ -1,0 +1,6 @@
+- name: Ensure rsyslog is started and enabled at boot
+  service:
+    name: 'rsyslog'
+    state: 'started'
+    enabled: 'yes'
+    use: 'systemd'

@@ -2,6 +2,8 @@
 # defaults file for rsyslog
 
 rsyslog_confs: []
+rsyslog_modules_install: []
+rsyslog_modules_enabled: []
 rsyslog_init_system: 'upstart'
 rsyslog_allow_udp: False
 rsyslog_udp_port: '514'
