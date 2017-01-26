@@ -10,7 +10,8 @@ before_install:
 install:
   - pip install ansible
   - printf "[defaults]\nroles_path = ../" > ansible.cfg
-  - docker run --name travis -d dpujadas/baseimage:python2
+  - docker run --name travis-trusty --privileged -d dpujadas/baseimage:trusty
+  - docker run --name travis-xenial --privileged -d dpujadas/baseimage:xenial
 
 script:
   # Check the syntax
@@ -20,8 +21,10 @@ script:
   # Check idempotence
   - >
     ansible-playbook tests/test.yml -i tests/inventory | tee /tmp/output.txt;
-    grep -q 'changed=0.*failed=0' /tmp/output.txt
+    (grep -q 'travis-trusty.*changed=0.*failed=0' /tmp/output.txt &&
+    grep -q 'travis-xenial.*changed=0.*failed=0' /tmp/output.txt)
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
   # Check rsyslog is up and running
-  - (echo > /dev/tcp/$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' travis)/514) >/dev/null 2>&1
+  - (echo > /dev/tcp/$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' travis-trusty)/514) >/dev/null 2>&1
+  - (echo > /dev/tcp/$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' travis-xenial)/514) >/dev/null 2>&1

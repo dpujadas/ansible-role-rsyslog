@@ -1,3 +1,9 @@
+- name: Enable service
+  shell: >
+    systemctl enable rsyslog 2>&1 | grep "Created symlink" | wc -l
+  register: rsyslog_enable_service
+  changed_when: rsyslog_enable_service.stdout == '1'
+
 - name: Ensure rsyslog is started and enabled at boot
   service:
     name: 'rsyslog'

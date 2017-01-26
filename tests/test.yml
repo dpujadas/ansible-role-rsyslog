@@ -1,10 +1,19 @@
 ---
-- hosts: travis
+- hosts: travis-trusty
   connection: docker
   remote_user: root
   roles:
     - {
       role: ansible-role-rsyslog,
-      rsyslog_init_system: 'runit',
+      rsyslog_allow_tcp: True
+    }
+
+- hosts: travis-xenial
+  connection: docker
+  remote_user: root
+  roles:
+    - {
+      role: ansible-role-rsyslog,
+      rsyslog_init_system: 'systemd',
       rsyslog_allow_tcp: True
     }
